@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>A basic map with MapboxGL.js</title>
+  <!--add MapboxGLjs CSS-->
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet' />
+  <link rel="stylesheet" href="main.css" />
+</head>
+
+<body>
+  <h1>Mapbox Example</h1>
+  <button onclick="changeFontSize(1.4);"> <span style="font-size:10px;">A</span><span
+      style="font-size:14px;">A</span><span style="font-size:18px;">A</span></button>
+  <button onclick="changeFontSize(0.7);"> <span style="font-size:18px;">A</span><span
+      style="font-size:14px;">A</span><span style="font-size:10px;">A</span></button>
+  <!--The div in which the map will be created-->
+  <div id="map"></div>
+  <!--load mapboxgl.js-->
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js'></script>
+  <script>
+
+    let map = new mapboxgl.Map({
+      container: 'map',
+      style: 'https://api.maptiler.com/maps/96f41b36-a033-4b38-9f22-e2f64fb3868e/style.json?key=BrAJoIaS66eahLFykljd',
+      hash: true,
+      zoom: 11,
+      pitch: 60,
+      bearing: 62.4,
+      center: [4.8, 52.4],
+      attributionControl: false
+    });
+
+    // Add zoom and rotation controls to the map.
+    map.addControl(new mapboxgl.NavigationControl(), "top-left");
+
+    // Attribution
+    map.addControl(new mapboxgl.AttributionControl({
+      compact: true,
+      customAttribution: "hello there"
+    }));
+
+    // Fullscreen
+    map.addControl(new mapboxgl.FullscreenControl({ container: document.querySelector('body') }));
+
+    // Check for Mapbox gl support:
+    if (!mapboxgl.supported()) {
+      alert('Your browser does not support Mapbox GL');
+    };
+
+    // Information on click
+    map.on('click', function (e) {
+      var features = map.queryRenderedFeatures(e.point);
+      var text = '';
+      if (features.length > 0) {
+        features.map((f, i) => {
+          text = text + `<h3>Layer ${i}: ${f.sourceLayer}</h3>`;
+          for (const key in f.properties) {
+            if (f.properties.hasOwnProperty(key)) {
+              text = text + `<b> ${key}: </b>${f.properties[key]}</br>`
+            }
+          }
+        })
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML(text)
+          .addTo(map);
+      }
+      else {
+        new mapboxgl.Popup()
+          .setLngLat(e.lngLat)
+          .setHTML('You clicked at: ' + e.lngLat)
+          .addTo(map);
+      }
+    });
+
+
+    // Change style layer
+    map.on('load', function () {
+      map.setPaintProperty('water', 'fill-color', '#40bcd8');
+      map.setPaintProperty('highway-fill', 'line-color', '#ea4f57');
+      map.setPaintProperty('highway-case', 'line-color', '#a7363b');
+      map.setPaintProperty('road-fill-main-motor', 'line-color', '#ffaf3f');
+      map.setPaintProperty('road-case-main-motor', 'line-color', '#a7363b');
+    });
+
+    // Remove Style layer or visibility
+    map.on('load', function () {
+      if (map.getLayer('place-labels')) { map.removeLayer('place-labels') };
+      // map.setLayoutProperty("place-labels", "visibility", "none")
+    });
+
+    // Add layer 
+    map.on('load', function () {
+      map.addLayer({
+        "id": "newlayer",
+        "source": "wm_visdata",
+        "source-layer": "roads",
+        "type": "line",
+        "filter": [
+          "==",
+          [
+            "get",
+            "type"
+          ],
+          "highway"
+        ],
+        "layout": {
+          "line-cap": "round",
+          "line-join": "round",
+          "visibility": "visible"
+        },
+        "paint": {
+          "line-width": 20,
+          "line-color": "#317581",
+          "line-blur": 10,
+          "line-translate": [5,5]
+        }
+      }, "highway-case");
+    });
+
+
+  // Increase fonts for bad sighted people
+  const changeFontSize = function (factor) {
+    let stijl = map.getStyle();
+    stijl.layers.forEach((layer) => {
+      if (layer.type === "symbol" && layer.layout["text-size"]) {
+        let currentsize = layer.layout["text-size"];
+        if (currentsize.length > 4) {
+          for (let i = 4; i <= currentsize.length; i += 2) {
+            currentsize[i] = currentsize[i] * factor;
+          };
+          map.setLayoutProperty(layer.id, 'text-size', currentsize);
+        }
+        else if (typeof currentsize === "number") {
+          map.setLayoutProperty(layer.id, 'text-size', currentsize * factor);
+        }
+        else { console.log("different style for text size") }
+      }
+    })
+  };
+
+    // Adding an extra layer
+    // Make a GEOJSON
+    let wurjson = {
+      "type": "FeatureCollection",
+      "name": "15yrMGI",
+      "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+      "features": [
+        { "type": "Feature", "properties": { "fid": 0, "height": 60 }, "geometry": { "type": "Point", "coordinates": [5.66647, 51.98514] } },
+        { "type": "Feature", "properties": { "fid": 1, "height": 45 }, "geometry": { "type": "Point", "coordinates": [5.66801, 51.9864] } },
+        { "type": "Feature", "properties": { "fid": 2, "height": 100 }, "geometry": { "type": "Point", "coordinates": [5.66361, 51.98531] } },
+        { "type": "Feature", "properties": { "fid": 3, "height": 30 }, "geometry": { "type": "Polygon", "coordinates": [[[5.66554, 51.98675], [5.66832, 51.9875], [5.66778, 51.98825], [5.66602, 51.98779], [5.66591, 51.98784], [5.66501, 51.98758], [5.66498, 51.98753], [5.66554, 51.98675]]] } }
+      ]
+    };
+    // On Load add GeoJSON SOURCE and LAYER
+    map.on('load', function (e) {
+      // ADD GEOJSON SOURCE
+      map.addSource('punten', {
+        'type': 'geojson',
+        'data': wurjson
+      });
+      // ADD an extra layer
+      map.addLayer({
+        'id': 'geojson-points',
+        'type': 'circle',
+        'source': 'punten',
+        'layout': {},
+        'paint': {
+          'circle-color': '#000fff',
+          'circle-radius': 10
+        }
+      });
+    });
+
+
+  </script>
+
+</body>
+
+</html>

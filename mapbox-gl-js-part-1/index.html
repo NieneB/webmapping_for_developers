@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>A basic map with MapboxGL.js</title>
+  <!--add MapboxGLjs CSS-->
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.css' rel='stylesheet' />
+  <link rel="stylesheet" href="main.css" />
+</head>
+
+<body>
+  <h1>Mapbox Example</h1>
+  <!--The div in which the map will be created-->
+  <div id="map"></div>
+  <!--load mapboxgl.js-->
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.4.1/mapbox-gl.js'></script>
+  <script>
+    // mapboxgl.accessToken = '<accesTokenHERE>';
+
+    let map = new mapboxgl.Map({
+      container: 'map',
+      style: 'https://api.maptiler.com/maps/96f41b36-a033-4b38-9f22-e2f64fb3868e/style.json?key=BrAJoIaS66eahLFykljd',
+      hash: true,
+      zoom: 11,
+      pitch: 60,
+      bearing: 62.4,
+      center: [4.8, 52.4],
+      attributionControl: false
+    });
+
+    // Add zoom and rotation controls to the map.
+    map.addControl(new mapboxgl.NavigationControl(), "top-left");
+
+    // Attribution
+    map.addControl(new mapboxgl.AttributionControl({
+      compact: true,
+      customAttribution: "hello there, this is my map"
+    }));
+
+    // Fullscreen
+    map.addControl(new mapboxgl.FullscreenControl({ container: document.querySelector('body') }));
+
+    // Check for Mapbox gl support:
+    if (!mapboxgl.supported()) {
+      alert('Your browser does not support Mapbox GL');
+    };
+
+  </script>
+</body>
+
+</html>
