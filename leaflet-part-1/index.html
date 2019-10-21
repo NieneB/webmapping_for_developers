@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>My first web map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="main.css" />
+</head>
+
+<body>
+    <H1>Example</H1>
+    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-hash/0.2.1/leaflet-hash.js"></script>
+    <div id="map"></div>
+    <script>
+        //initialize the map
+        // let map = L.map('map').setView([51.9741, 5.6688], 15);
+        
+        //map options
+        let options = {
+            zoom: 12,
+            center: [51.9741, 5.6688],
+            maxZoom: 12,
+            minZoom: 6,
+            maxBounds: [[40.712, -74.227], [40.774, -74.125]]
+        }
+        
+        //initialize the map with options
+        let map = L.map('map', options);
+
+        //Create base layer
+        let backgroundMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        });
+        // add layer to map instance
+        backgroundMap.addTo(map);
+
+        // Hash in URL
+        let hash = new L.Hash(map);
+
+        // Dealing with map events
+
+        // function onMapClick(e) {
+        //     alert("You clicked the map at " + e.latlng);
+        // }
+
+        // Popup 
+        let popup = L.popup();
+
+        function onMapClick(e) {
+            popup
+                .setLatLng(e.latlng)
+                .setContent("You clicked the map at " + e.latlng.toString())
+                .openOn(map);
+        }
+
+        map.on('click', onMapClick);
+    </script>
+</body>
+
+</html>
