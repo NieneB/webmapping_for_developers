@@ -16,7 +16,7 @@
     <div id="map"></div>
     <script>
 
-        var myGeojson = {
+        let myGeojson = {
             "type": "FeatureCollection",
             "features": [
                 {
@@ -27,47 +27,47 @@
                         "coordinates": [
                             [
                                 [
-                                    5.664052963256836,
-                                    51.983241434598284
+                                    4.8969411,
+                                    52.388613
                                 ],
                                 [
-                                    5.65272331237793,
-                                    51.98186699036
+                                    4.8962116,
+                                    52.377407
                                 ],
                                 [
-                                    5.64396858215332,
-                                    51.97737332064479
+                                    4.8987436,
+                                    52.36935
                                 ],
                                 [
-                                    5.657873153686523,
-                                    51.96246168188569
+                                    4.9026489,
+                                    52.3689966
                                 ],
                                 [
-                                    5.688686370849609,
-                                    51.9690720630921
+                                    4.9109745,
+                                    52.373717
                                 ],
                                 [
-                                    5.683708190917969,
-                                    51.97864216717502
+                                    4.91127490,
+                                    52.3813365
                                 ],
                                 [
-                                    5.673494338989258,
-                                    51.98429867069855
+                                    4.9023056,
+                                    52.38106
                                 ],
                                 [
-                                    5.664052963256836,
-                                    51.983241434598284
+                                    4.8969411,
+                                    52.388613
                                 ]
                             ]
                         ]
                     }
                 }
             ]
-        }
+        };
 
 
         // Define the RDnew projection
-        var RDnew = new L.Proj.CRS('EPSG:28992', '+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +units=m +towgs84=565.2369,50.0087,465.658,-0.406857330322398,0.350732676542563,-1.8703473836068,4.0812 +no_defs',
+        let RDnew = new L.Proj.CRS('EPSG:28992', '+proj=sterea +lat_0=52.15616055555555 +lon_0=5.38763888888889 +k=0.9999079 +x_0=155000 +y_0=463000 +ellps=bessel +units=m +towgs84=565.2369,50.0087,465.658,-0.406857330322398,0.350732676542563,-1.8703473836068,4.0812 +no_defs',
             {
                 resolutions: [3440.640, 1720.320, 860.160, 430.080, 215.040, 107.520, 53.760, 26.880, 13.440, 6.720, 3.360, 1.680, 0.840, 0.420, 0.210],
                 bounds: L.bounds([-285401.92, 22598.08], [595401.9199999999, 903401.9199999999]),
@@ -75,21 +75,20 @@
             }
         );
         //initialize the map
-        var map = L.map('map', {
-            crs: RDnew
-        }).setView([51.9741, 5.6688], 9);
+        //map options
+        let options = {
+            crs: RDnew,
+            zoom: 12,
+            center: [52.38031476, 4.90273476],
+            maxZoom: 19,
+            minZoom: 6,
+            maxBounds: [[51.8716, 3.8133], [52.8271, 6.4494]]
+        };
 
-        // //Create baselayer - tegels 
-        // var backgroundMap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
-        //     attribution: '<a href="http://openstreetmap.org">OpenStreetMap</a>contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
-        //     maxZoom: 19
-        // }
-        // );
-        // // Add base layer to map. 
-        // backgroundMap.addTo(map);
-
+        //initialize the map with options
+        let map = L.map('map', options);
         // Add the PDOK map
-        var pdokachtergrondkaart = new L.TileLayer('http://geodata.nationaalgeoregister.nl/tms/1.0.0/brtachtergrondkaart/{z}/{x}/{y}.png', {
+        let pdokachtergrondkaart = new L.TileLayer('http://geodata.nationaalgeoregister.nl/tms/1.0.0/brtachtergrondkaart/{z}/{x}/{y}.png', {
             minZoom: 0,
             maxZoom: 13,
             tms: true,
@@ -97,107 +96,98 @@
         });
         pdokachtergrondkaart.addTo(map);
 
-        // ADD a WMS layer
-        var cbs = L.tileLayer.wms('https://geodata.nationaalgeoregister.nl/wijkenbuurten2018/wms', {
-            'layers': 'cbs_buurten_2018',
-            'styles': 'wijkenbuurten2018:wijkenbuurten_thema_buurten_default',
-            'srs': 'EPSG:28992',
-            'format': 'image/png',
-            'transparent': true
-        }).addTo(map);
-
         // ADD the geoJSON Layer
-        L.geoJSON(myGeojson).addTo(map);
+        // L.geoJSON(myGeojson).addTo(map);
 
-        // Create a marker style
-        var geojsonMarkerOptions = {
-            radius: 10,
-            fillColor: "#ff7800",
-            color: "#000",
-            weight: 1,
-            opacity: 1,
-            fillOpacity: 0.8
+
+        // adding WFS geojson
+        let url = "https://geodata.nationaalgeoregister.nl/wijkenbuurten2018/wfs?service=WFS&version=2.0.0&"
+            + "request=GetFeature&"
+            + "outputFormat=application/json&"
+            + "srsName=EPSG:4326&"
+            + "geometryLength=5&"
+            + "TypeName=wijkenbuurten2018:cbs_buurten_2018&"
+            + "propertyName=buurtnaam,aantal_inwoners,geom&"
+            + "cql_filter=(water='NEE' AND gemeentenaam='Amsterdam')"
+
+        let myStyle = {
+            "color": "#ff7800",
+            "weight": 5,
+            "opacity": 0.65
         };
 
-        // Create FUNCTION  for data driven styling
-        function geojsonMarkerOptions(feature) {
+        function getColor(d) {
+            return d > 6000 ? '#800026' :
+                d > 5000 ? '#BD0026' :
+                    d > 4000 ? '#E31A1C' :
+                        d > 3000 ? '#FC4E2A' :
+                            d > 2000 ? '#FD8D3C' :
+                                d > 1000 ? '#FEB24C' :
+                                    d > 500 ? '#FED976' :
+                                        '#FFEDA0';
+        }
+
+        function style(feature) {
             return {
-                radius: feature.properties.id,
-                fillColor: "#ff7800",
-                color: "#000",
-                weight: 1,
+                fillColor: getColor(feature.properties.aantal_inwoners),
+                weight: 2,
                 opacity: 1,
-                fillOpacity: 0.8
-            }
-        };
-        //create a empty geojson layer
-        var geojson = L.geoJson(null, {
-            pointToLayer: function (feature, latlng) {
-                return L.circleMarker(latlng, geojsonMarkerOptions);  //use geojsonMarkerOptions(feature) for data driven styling
-            }
-        }).addTo(map);
+                color: 'white',
+                dashArray: '3',
+                fillOpacity: 0.7
+            };
+        }
 
+        let serviceGeoJSON = L.geoJson(null, {
+            style: style,
+            onEachFeature: onEachFeature
+        }).bindPopup(function (layer) {
+            return layer.feature.properties.buurtnaam
+        })
+            .addTo(map);
 
-        // new Http Request
-        var xhttp = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest()
+        xhr.open('GET', encodeURI(url))
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                console.log(xhr.responseText)
+                serviceGeoJSON.addData(JSON.parse(xhr.responseText))
 
-        // set the request method and data file
-        xhttp.open('GET', encodeURI("/sample_points.geojson"));
-
-        //specify what must be done with the geojson data to the layer when request is succesfull
-        xhttp.onload = function () {
-            if (xhttp.readyState === 4) {
-                // add the json data to the geojson layer we created before!
-                geojson.addData(JSON.parse(xhttp.responseText));
             } else {
-                alert('Request failed.  Returned status of ' + xhttp.status);
+                alert('Request failed.  Returned status of ' + xhr.status)
             }
-        };
+        }
+        xhr.send();
 
-        // send the request
-        xhttp.send();
+        
+        // Mouse interaction
+        function highlightFeature(e) {
+            var layer = e.target;
+            layer.setStyle({
+                weight: 5,
+                color: '#eee000',
+            });
+            if (!L.Browser.ie && !L.Browser.opera) {
+                layer.bringToFront();
+            }
+        }
+        // Function for reseting highlight
+        function resetHighlight(e) {
+            serviceGeoJSON.resetStyle(e.target);
+        }
+        // Function to zoom to feature
+        function zoomToFeature(e) {
+            map.fitBounds(e.target.getBounds());
+        }
+        function onEachFeature(feature, layer) {
+            layer.on({
+                mouseover: highlightFeature,
+                mouseout: resetHighlight,
+                click: zoomToFeature
+            });
+        }
 
-        // Hash in URL
-        var hash = new L.Hash(map);
 
-        //Add markers
-        var forum = L.marker([51.98531, 5.66361]);
-        forum.addTo(map);
-
-        var atlas = L.marker([51.9864, 5.66801]);
-        atlas.addTo(map);
-
-        var uni = L.marker([51.98514, 5.66647]);
-        uni.addTo(map);
-
-        //Add pop-ups
-        var popup = "The Forum Building.";
-        forum.bindPopup(popup);
-
-        var popup1 = "The atlas building";
-        atlas.bindPopup(popup1)
-
-        var popup2 = "What building is this? ";
-        uni.bindPopup(popup2);
-
-        //add a circle
-        var circle = L.circle([51.98531, 5.66361], 500, {
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.5
-        }).addTo(map);
-
-        //add a polygon   
-        var polygon = L.polygon(
-            [[
-                [51.98675, 5.66554],
-                [51.9875, 5.66832],
-                [51.98825, 5.66778],
-                [51.98779, 5.66602],
-                [51.98784, 5.66591],
-                [51.98758, 5.66501],
-                [51.98753, 5.66498],
-                [51.98675, 5.66554]]]).addTo(map);
     </script>
 </body>
 

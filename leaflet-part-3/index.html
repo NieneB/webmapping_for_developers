@@ -55,56 +55,7 @@
 
         // Hash in URL
         // var hash = new L.Hash(map);
-
-        function onMapClick(e) {
-            let point = map.latLngToContainerPoint(e.latlng, map.getZoom());
-            // let point = e.containerPoint;
-            let bounds = map.getBounds();
-            let cornerNE = RDnew.project(bounds._northEast).toString();
-            let cornerSW = RDnew.project(bounds._southWest).toString();
-            let boundsString = cornerNE + ',' + cornerSW;
-            minx, miny, maxx, maxy 
-
-            
-            // new Http Request
-            let xhttp = new XMLHttpRequest();
-            let url = 'https://geodata.nationaalgeoregister.nl/wijkenbuurten2018/ows?SERVICE=WMS' +
-                '&version=1.3.0' +
-                '&request=GetFeatureInfo' +
-                '&layers=cbs_buurten_2018' +
-                '&query_layers=cbs_buurten_2018' +
-                '&crs=EPSG:4326' +
-                '&bbox=' +  boundsString +
-                '&height=' + map.getSize().y +
-                '&width=' + map.getSize().x +
-                '&styles=wijkenbuurten2018:wijkenbuurten_thema_buurten_gemeentewijkbuurt_percentage_eenpersoonshuishoudens' +
-                '&i=' + point.x +
-                '&j=' + Math.round(point.y) +
-                '&info_format=application/json' +
-                '&feature_count=1';
-
-            console.log(url)
-            // set the request method and data file
-            xhttp.open('GET', encodeURI(url));
-
-            //specify what must be done with the geojson data to the layer when request is successfully
-            xhttp.onload = function () {
-                if (xhttp.readyState === 4) {
-                    // add the json data to the geojson layer we created before!
-                    let data = JSON.parse(xhttp.responseText)
-                    console.log(data)
-                } else {
-                    alert('Request failed.  Returned status of ' + xhttp.status);
-                }
-            };
-
-            // send the request
-            xhttp.send();
-
-        }
-        map.on('click', onMapClick);
-
-
+        
     </script>
 </body>
 
