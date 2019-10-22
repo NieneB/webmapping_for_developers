@@ -12,6 +12,26 @@
 section.has-light-background, section.has-light-background h1, section.has-light-background h2, section.has-light-background h3, section.has-light-background h4, section.has-light-background h5, section.has-light-background h6 {
   color: #222; }
 
+ @import url(../../lib/font/Lato2OFLWeb/Lato/latofonts.css);
+ @import url(../../lib/font/cartiqo/cartiqo.css);
+
+section.has-dark-background, section.has-dark-background h1, section.has-dark-background h2, section.has-dark-background h3, section.has-dark-background h4, section.has-dark-background h5, section.has-dark-background h6 {
+  color: #222; }
+
+
+.cartiqo {
+    font-family: "cartiqo", "LatoWeb", Helvetica, sans-serif;
+    color: #ffffff;
+    font-size: 3.2em;
+    padding: 0px;
+    line-height: 1;
+}
+
+.iconlinks{
+  position: absolute;
+  top:-340px;
+  right:-170px;
+}
 
 /*********************************************
  * GLOBAL STYLES
